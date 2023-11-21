@@ -1,3 +1,4 @@
+import rsa
 import socket
 import base64
 import os
@@ -46,7 +47,7 @@ def startInit():
     myClient = connectByIP(genIPByCode(reciveMsg(myServer)))
     return myServer, myClient
 
-if name == 'main':
+if __name__ == '__main__':
     connCode = genConnectionCode()
     print(f'Your connection code is: {connCode}')
     isCS = int(input('Enter 1 if you want to connect to your server: '))
@@ -57,9 +58,6 @@ if name == 'main':
         while True:
             msg = input()
             sendMsg(myClient, msg.encode())
-            if msg == 'exit':
-                break
-            msg = reciveMsg(myServer).decode()
             print(msg)
             if msg == 'exit':
                 break
@@ -68,11 +66,7 @@ if name == 'main':
         sendMsg(myServer, str(connCode).encode())
         myClient = bindClient()
         while True:
-            msg = input()
-            sendMsg(myClient, msg.encode())
-            if msg == 'exit':
-                break
-            msg = reciveMsg(myServer).decode()
+            msg = reciveMsg(myClient).decode()
             print(msg)
             if msg == 'exit':
                 break
