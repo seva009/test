@@ -1,4 +1,6 @@
 import socket
+import base64
+import os
 
 def getLocIP():
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -14,41 +16,63 @@ def genConnectionCode():
 def genIPByCode(code):
     return socket.inet_ntoa((socket.inet_aton(getLocIP())[:-1] + bytes([int(code)])))
 
-def connectByIP(ip, port):
-    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    sock.connect((ip, port))
+def connectByIP(ip):
+    sock = socket.socket()
+    sock.connect((ip, 9090))
     return sock
 
-def bindClient(port):
-    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    sock.bind(('', port))
+def bindClient():
+    sock = socket.socket()
+    sock.bind(('', 9090))
     sock.listen(5)
-    conn, addr = sock.accept()
+    flag = True
+    while flag:
+        conn, addr = sock.accept()
+        if conn:
+            flag = False
     return conn
 
 def sendMsg(sock, msg):
-    sock.send(msg.encode())
+    sock.send(msg)
 
 def reciveMsg(sock):
-    return sock.recv(2048).decode()
+    return sock.recv(2048)
 
 def closeSock(sock):
     sock.close()
 
 def startInit():
-    myServer = bindClient(9090)
-    myClient = connectByIP(genIPByCode(reciveMsg(myServer)), 9090)
+    myServer = bindClient()
+    myClient = connectByIP(genIPByCode(reciveMsg(myServer)))
     return myServer, myClient
 
-if __name__ == '__main__':
+if name == 'main':
     connCode = genConnectionCode()
     print(f'Your connection code is: {connCode}')
     isCS = int(input('Enter 1 if you want to connect to your server: '))
     if isCS:
         print('Connecting to server...')
         myServer, myClient = startInit()
-            
+        msg = ""
+        while True:
+            msg = input()
+            sendMsg(myClient, msg.encode())
+            if msg == 'exit':
+                break
+            msg = reciveMsg(myServer).decode()
+            print(msg)
+            if msg == 'exit':
+                break
     else:
-        myServer = connectByIP(genIPByCode(int(input('Enter code: '))), 9090)
-        sendMsg(myServer, str(connCode))
-        myClient = bindClient(9091)
+        myServer = connectByIP(genIPByCode(int(input('Enter code: '))))
+        sendMsg(myServer, str(connCode).encode())
+        myClient = bindClient()
+        while True:
+            msg = input()
+            sendMsg(myClient, msg.encode())
+            if msg == 'exit':
+                break
+            msg = reciveMsg(myServer).decode()
+            print(msg)
+            if msg == 'exit':
+                break
