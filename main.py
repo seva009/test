@@ -54,7 +54,19 @@ if __name__ == '__main__':
     if isCS:
         print('Connecting to server...')
         myServer, myClient = startInit()
+        msg = ""
+        while True:
+            msg = input()
+            sendMsg(myClient, msg.encode())
+            print(msg)
+            if msg == 'exit':
+                break
     else:
         myServer = connectByIP(genIPByCode(int(input('Enter code: '))))
         sendMsg(myServer, str(connCode).encode())
         myClient = bindClient()
+        while True:
+            msg = reciveMsg(myClient).decode()
+            print(msg)
+            if msg == 'exit':
+                break
