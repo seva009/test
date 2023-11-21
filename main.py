@@ -46,17 +46,6 @@ def startInit():
     myClient = connectByIP(genIPByCode(reciveMsg(myServer)))
     return myServer, myClient
 
-async def sendAndRecive(myServer, myClient):
-    while True:
-        msg = input()
-        sendMsg(myClient, msg.encode())
-        if msg == 'exit':
-            break
-        msg = reciveMsg(myServer).decode()
-        print(msg)
-        if msg == 'exit':
-            break
-
 if __name__ == '__main__':
     connCode = genConnectionCode()
     print(f'Your connection code is: {connCode}')
@@ -66,7 +55,12 @@ if __name__ == '__main__':
         myServer, myClient = startInit()
         msg = ""
         while True:
-            sendAndRecive(myServer, myClient)
+            msg = input()
+            sendMsg(myClient, msg.encode())
+            if msg == 'exit':
+                break
+            msg = reciveMsg(myServer).decode()
+            print(msg)
             if msg == 'exit':
                 break
     else:
@@ -74,6 +68,11 @@ if __name__ == '__main__':
         sendMsg(myServer, str(connCode).encode())
         myClient = bindClient()
         while True:
-            sendAndRecive(myServer, myClient)
+            msg = input()
+            sendMsg(myClient, msg.encode())
+            if msg == 'exit':
+                break
+            msg = reciveMsg(myServer).decode()
+            print(msg)
             if msg == 'exit':
                 break
