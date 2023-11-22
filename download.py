@@ -5,6 +5,7 @@ def reciveMsg(sock):
     return sock.recv(2048)
 
 def saveFile(sock):
+    print('<system> Saving file...')
     filename = reciveMsg(sock).decode()
     file = open(filename, 'wb')
     data = reciveMsg(sock)
@@ -30,8 +31,8 @@ def getSign(typeS):
         return 'hg'
 
 def getFile(getSock, sendSock):
-    if getSign(reciveMsg(sock).decode()) == 'sfg':
-        sendSock.send(getHeader('hg').encode())
+    if reciveMsg(getSock).decode() == 'sfg, header':
+        sendSock.send('header received'.encode())
         saveFile(getSock)
         print('<system> File saved')
 
@@ -40,7 +41,7 @@ def sendFile(getSock, sendSock):
     print('header sent')
     header = reciveMsg(getSock).decode()
     print(header)
-    if getSign(header) == 'hg':
+    if header == 'header received':
         print('<system> Enter file name:')
         filename = input()
         sendSock.send(filename.encode())
