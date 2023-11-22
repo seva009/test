@@ -32,12 +32,14 @@ def getSign(typeS):
 def getFile(getSock, sendSock):
     if getSign(reciveMsg(sock).decode()) == 'sfg':
         sendSock.send(getHeader('hg').encode())
-        saveFile(sock)
+        saveFile(getSock)
         print('<system> File saved')
 
 def sendFile(getSock, sendSock):
     sendSock.send(getHeader('sfg').encode())
-    header = reciveMsg(sock).decode()
+    print('header sent')
+    header = reciveMsg(getSock).decode()
+    print(header)
     if getSign(header) == 'hg':
         print('<system> Enter file name:')
         filename = input()
@@ -48,3 +50,5 @@ def sendFile(getSock, sendSock):
             sendSock.send(data)
             data = sendFile.read(2048)
         sendFile.close()
+    else:
+        print('<system> Wrong header')

@@ -19,12 +19,12 @@ def genIPByCode(code):
 
 def connectByIP(ip):
     sock = socket.socket()
-    sock.connect((ip, 4444))
+    sock.connect((ip, 1488))
     return sock
 
 def bindClient():
     sock = socket.socket()
-    sock.bind(('', 4444))
+    sock.bind(('', 1488))
     sock.listen(5)
     flag = True
     while flag:
@@ -60,6 +60,7 @@ def send_thread():
         
 def receive_thread():
     while True:
+        dl.getFile(myServer, myClient)
         msg = reciveMsg(myClient).decode()
         if msg == 'exit':
             break
