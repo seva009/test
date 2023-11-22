@@ -1,7 +1,7 @@
 import socket
 import os
 import threading
-
+import download as dl
 
 def getLocIP():
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -50,17 +50,21 @@ def startInit():
 def send_thread():
     while True:
         msg = input()
-        sendMsg(myClient, msg.encode())
-        print(msg)
         if msg == 'exit':
             break
+        if msg == 'send file':
+            dl.sendFile(myServer, myClient)
+        else:
+            sendMsg(myClient, msg.encode())
+
         
 def receive_thread():
     while True:
         msg = reciveMsg(myClient).decode()
-        print(msg)
         if msg == 'exit':
             break
+        print(msg)
+
 
 if __name__ == '__main__':
     connCode = genConnectionCode()
@@ -73,7 +77,7 @@ if __name__ == '__main__':
         myServer = connectByIP(genIPByCode(int(input('Enter code: '))))
         sendMsg(myServer, str(connCode).encode())
         myClient = bindClient()
-        
+
     send_thread = threading.Thread(target=send_thread)
     receive_thread = threading.Thread(target=receive_thread)
 
@@ -82,3 +86,6 @@ if __name__ == '__main__':
 
     send_thread.join()
     receive_thread.join()
+
+    closeSock(myServer)
+    closeSock(myClient)
