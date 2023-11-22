@@ -47,61 +47,38 @@ def startInit():
     myClient = connectByIP(genIPByCode(reciveMsg(myServer)))
     return myServer, myClient
 
+def send_thread():
+    while True:
+        msg = input()
+        sendMsg(myClient, msg.encode())
+        print(msg)
+        if msg == 'exit':
+            break
+        
+def receive_thread():
+    while True:
+        msg = reciveMsg(myClient).decode()
+        print(msg)
+        if msg == 'exit':
+            break
+
 if __name__ == '__main__':
     connCode = genConnectionCode()
     print(f'Your connection code is: {connCode}')
     isCS = int(input('Enter 1 if you want to connect to your server: '))
     if isCS:
         print('Connecting to server...')
-        myServer, myClient = startInit()
-        def send_thread():
-            while True:
-                msg = input()
-                sendMsg(myClient, msg.encode())
-                print(msg)
-                if msg == 'exit':
-                    break
-        
-        def receive_thread():
-            while True:
-                msg = reciveMsg(myServer).decode()
-                print(msg)
-                if msg == 'exit':
-                    break
-
-        send_thread = threading.Thread(target=send_thread)
-        receive_thread = threading.Thread(target=receive_thread)
-
-        send_thread.start()
-        receive_thread.start()
-
-        send_thread.join()
-        receive_thread.join()
-        
+        myServer, myClient = startInit()  
     else:
         myServer = connectByIP(genIPByCode(int(input('Enter code: '))))
         sendMsg(myServer, str(connCode).encode())
         myClient = bindClient()
-        def send_thread():
-            while True:
-                msg = input()
-                sendMsg(myClient, msg.encode())
-                print(msg)
-                if msg == 'exit':
-                    break
         
-        def receive_thread():
-            while True:
-                msg = reciveMsg(myClient).decode()
-                print(msg)
-                if msg == 'exit':
-                    break
+    send_thread = threading.Thread(target=send_thread)
+    receive_thread = threading.Thread(target=receive_thread)
 
-        send_thread = threading.Thread(target=send_thread)
-        receive_thread = threading.Thread(target=receive_thread)
+    send_thread.start()
+    receive_thread.start()
 
-        send_thread.start()
-        receive_thread.start()
-
-        send_thread.join()
-        receive_thread.join()
+    send_thread.join()
+    receive_thread.join()
